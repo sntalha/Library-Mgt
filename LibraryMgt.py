@@ -1,0 +1,63 @@
+from tkinter import *
+from tkinter import ttk
+import pyodbc
+from tkinter import messagebox
+
+def insert():
+    con1 = pyodbc.connect(r'DRIVER={Microsoft Access Driver (*.mdb,*.accdb)};DBQ=D:\lib.mdb;')
+    cursor1 = con1.cursor()
+    cursor1.execute(f"INSERT INTO Books(BookSerial,BookName,Author,Pages)values('{var1.get()}','{var2.get()}','{var3.get()}',{var4.get()}')")
+    con1.commit()
+    messagebox.showinfo("One record has been added.")
+def delete():
+    con1 = pyodbc.connect((r'DRIVER={Microsoft Access Driver (*.mdb,*.accdb)};'
+                           r'DBQ=D:\lib.mdb;'))
+    cursor1 = con1.cursor()
+    cursor1.execute(f"DELETE FROM Books where BookSerial={var1.get()}")
+    con1.commit()
+    messagebox.showinfo("One record has been deleted.")
+def display():
+    con1 = pyodbc.connect((r'DRIVER={Microsoft Access Driver (*.mdb,*.accdb)};'
+                           r'DBQ=D:\lib.mdb;'))
+    cursor1 = con1.cursor()
+    cursor1.execute("select * from Books order by BooksSerial")
+    data=cursor1.fetchall()
+    for i in data:
+        dtable.insert('',END,values=i)
+    con1.close()
+m=Tk()
+m.geometry("1500x700")
+m.config(bg="Black")
+var1=StringVar()
+var2=StringVar()
+var3=StringVar()
+var4=StringVar()
+l1=Label(m,text="Library Management System",bg="green",fg="white",font=("Georgina",40))
+l1.pack(side=TOP,fill=X)
+f1=Frame(m,bd=5,bg="light green")
+f1.place(x=10,y=75,width=500,height=600)
+l2=Label(f1,text="Book Serial",bg="green",fg="white",font=("Georgina",12),width=12).grid(row=1,column=0,pady=10,padx=10)
+l3=Label(f1,text="Book Name",bg="green",fg="white",font=("Georgina",12),width=12).grid(row=2,column=0,pady=10,padx=10)
+l4=Label(f1,text="Author",bg="green",fg="white",font=("Georgina",12),width=12).grid(row=3,column=0,pady=10,padx=10)
+l5=Label(f1,text="Pages",bg="green",fg="white",font=("Georgina",12),width=12).grid(row=4,column=0,pady=10,padx=10)
+e1=Entry(f1,textvariable=var1,bg="white",fg="black",width=15)
+e1.grid(row=1,column=1,pady=10,padx=10)
+e1=Entry(f1,textvariable=var2,bg="white",fg="black",width=15)
+e1.grid(row=2,column=1,pady=10,padx=10)
+e1=Entry(f1,textvariable=var3,bg="white",fg="black",width=15)
+e1.grid(row=3,column=1,pady=10,padx=10)
+e1=Entry(f1,textvariable=var4,bg="white",fg="black",width=15)
+e1.grid(row=4,column=1,pady=10,padx=10)
+b1=Button(f1,text="Display",bg="green",fg="white",command=display,width=10).grid(row=6,column=0,pady=10,padx=10)
+b2=Button(f1,text="Insert",bg="green",fg="white",command=insert,width=10).grid(row=6,column=1,pady=10,padx=10)
+b3=Button(f1,text="Delete",bg="green",fg="white",command=delete,width=10).grid(row=7,column=0,pady=10,padx=10)
+b4=Button(f1,text="Close",bg="green",fg="white",command=m.quit,width=10).grid(row=7,column=1,pady=10,padx=10)
+f2=Frame(m,bd=5,bg="light green")
+f2.place(x=400,y=75,width=1000,height=600)
+dtable=ttk.Treeview(f2,height=700,columns=('BookSerial','BookName','Author','Pages'))
+dtable.pack(fill=BOTH,expand=TRUE)
+dtable.heading("BookSerial",text="BookSerial")
+dtable.heading("BookName",text="BookName")
+dtable.heading("Author",text="Author")
+dtable.heading("Pages",text="Pages")
+m.mainloop()
